@@ -1,0 +1,24 @@
+{
+  "common_fields": [
+    "nome_coordenacao",
+    "centro_custo",
+    "matricula_responsavel"
+  ],
+  "platforms": [
+    {
+      "id": "litellm",
+      "name": "LiteLLM",
+      "required_fields": ["ambiente", "modelos", "limite_tokens"]
+    },
+    {
+      "id": "langfuse",
+      "name": "LangFuse",
+      "required_fields": ["nome_projeto", "ambiente", "limite_trace_mensal"]
+    },
+    {
+      "id": "gemini_enterprise",
+      "name": "Gemini Enterprise",
+      "required_fields": ["nome_agente", "descricao", "nivel_acesso"]
+    }
+  ]
+}

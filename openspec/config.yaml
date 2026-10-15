@@ -1,0 +1,54 @@
+schema: spec-driven
+
+context: |
+  Project: onboarding-agents — multi-agent system that guides employees through platform onboarding and opens IT tickets.
+
+  Purpose: MVP to demonstrate a multi-agent architecture (porteiro → especialista → validador → tool) that
+  guides a client through filling ticket fields, validates them, and opens a ticket on the right platform.
+  Managed by an LLM Ops engineer who owns three AI platforms.
+
+  Monorepo, with three applications:
+
+  1. UI + BFF (Next.js App Router, TypeScript, Tailwind):
+     - Two tabs: "Chat" (talk to the agent) and "Tickets" (list created tickets).
+     - Acts only as proxy to the two FastAPI backends. No own database.
+     - lib/ = HTTP clients for the backends; components/ = UI.
+
+  2. Agents backend (FastAPI + LangGraph, Python via uv):
+     - MVC layout: models/ (Pydantic schemas + LangGraph state), controllers/ (graph + onboarding service),
+       views/ (routers: POST /chat, GET /conversation/{thread_id}), tools/ (gemud ticket tool), contracts/.
+     - Graph: porteiro (classify platform) → especialista (collect fields) → validador (check required) → tool abrir_ticket.
+     - Loop: validador returns to especialista when fields are missing.
+     - Checkpointing in Postgres (Docker) for async conversation resume.
+
+  3. Mock Gemud (FastAPI, Python via uv):
+     - MVC layout: models/ (Ticket schema), controllers/ (ticket service), views/ (routers: POST /tickets,
+       GET /tickets, GET /tickets/{id}), db/.
+     - Persists tickets in SQLite (single local file, no extra container).
+
+  Platforms (tickets to open, each with its own schema):
+    - LiteLLM (AI Gateway)
+    - LangFuse (observability)
+    - Gemini Enterprise (low-code agents)
+
+  Common required fields (identification of the "coordenação"):
+    - nome_coordenacao (text)
+    - centro_custo (9 digits)
+    - matricula_responsavel (10 digits, text)
+
+  Platform-specific required fields:
+    - LiteLLM: ambiente, modelos, limite_tokens
+    - LangFuse: nome_projeto, ambiente, limite_trace_mensal
+    - Gemini Enterprise: nome_agente, descricao, nivel_acesso
+
+  required_fields per platform come from a declarative contract (contracts/platforms.json), so adding a
+  platform is config, not code.
+
+  Conventions:
+    - UI text in Portuguese (pt-BR).
+    - Conventional commits.
+    - TypeScript strict mode.
+    - Python with uv (uv sync / uv run), type hints.
+    - README.md at the root documents how to start EACH application and use the service.
+
+  Only Docker container: Postgres (LangGraph checkpointer). FastAPI/Next.js run on the host.
