@@ -15,22 +15,22 @@
 
 ## 3. Agents backend (FastAPI + LangGraph)
 
-- [ ] 3.1 Scaffold the `apps/agents` uv project with FastAPI + LangGraph and verify `uv sync` succeeds
-- [ ] 3.2 Author `contracts/platforms.json` with common fields and per-platform required fields (LiteLLM, LangFuse, Gemini Enterprise); verify it parses and lists expected fields
-- [ ] 3.3 Define the LangGraph state and Pydantic schemas (models/); verify state serializes/deserializes cleanly
-- [ ] 3.4 Implement the graph (controllers/): porteiro, especialista, validador, and the validador→especialista conditional loop; verify a missing-field flow loops back and a complete flow exits
-- [ ] 3.5 Implement the `abrir_ticket` tool (tools/) that POSTs to Mock Gemud; verify it creates a ticket when pointed at a running Mock Gemud
-- [ ] 3.6 Wire Postgres checkpointing so conversations resume by thread_id; verify a second `POST /chat` with the same thread continues rather than restarting
-- [ ] 3.7 Implement routers (views/): `POST /chat` and `GET /conversation/{thread_id}`; verify chat replies and history retrieval (including 404 for unknown thread)
+- [x] 3.1 Scaffold the `apps/agents` uv project with FastAPI + LangGraph and verify `uv sync` succeeds
+- [x] 3.2 Author `contracts/platforms.json` with common fields and per-platform required fields (LiteLLM, LangFuse, Gemini Enterprise); verify it parses and lists expected fields
+- [x] 3.3 Define the LangGraph state and Pydantic schemas (models/); verify state serializes/deserializes cleanly
+- [x] 3.4 Implement the graph (controllers/): porteiro, especialista, validador, and the validador→especialista conditional loop; verify a missing-field flow loops back and a complete flow exits
+- [x] 3.5 Implement the `abrir_ticket` tool (tools/) that POSTs to Mock Gemud; verify it creates a ticket when pointed at a running Mock Gemud
+- [x] 3.6 Wire Postgres checkpointing so conversations resume by thread_id; verify a second `POST /chat` with the same thread continues rather than restarting
+- [x] 3.7 Implement routers (views/): `POST /chat` and `GET /conversation/{thread_id}`; verify chat replies and history retrieval (including 404 for unknown thread)
 
 ## 4. Web UI + BFF (Next.js)
 
-- [ ] 4.1 Scaffold `apps/web` (Next.js App Router, TypeScript strict, Tailwind) and verify `npm run build` succeeds
-- [ ] 4.2 Add typed HTTP clients (lib/) for `/chat`, `/conversation/{thread_id}`, and `/tickets`; verify a request reaches a running backend
-- [ ] 4.3 Build the "Chat" tab (components/) with pt-BR text; verify sending a message shows the agent's reply
-- [ ] 4.4 Build the "Tickets" tab listing created tickets; verify it renders tickets returned by Mock Gemud
+- [x] 4.1 Scaffold `apps/web` (Next.js App Router, TypeScript strict, Tailwind) and verify `npm run build` succeeds
+- [x] 4.2 Add typed HTTP clients (lib/) for `/chat`, `/conversation/{thread_id}`, and `/tickets`; verify a request reaches a running backend
+- [x] 4.3 Build the "Chat" tab (components/) with pt-BR text; verify sending a message shows the agent's reply
+- [x] 4.4 Build the "Tickets" tab listing created tickets; verify it renders tickets returned by Mock Gemud
 
 ## 5. Integration & polish
 
-- [ ] 5.1 Run the full flow end-to-end (web → agents → mock gemud → ticket listed) with all three apps and Postgres up; verify a ticket is created and appears in the Tickets tab
-- [ ] 5.2 Confirm all UI text is pt-BR and code follows Conventional Commits / type hints; verify by review and a clean build
+- [x] 5.1 Run the full flow end-to-end (web → agents → mock gemud → ticket listed) with all three apps and Postgres up; verify a ticket is created and appears in the Tickets tab
+- [x] 5.2 Confirm all UI text is pt-BR and code follows Conventional Commits / type hints; verify by review and a clean build
