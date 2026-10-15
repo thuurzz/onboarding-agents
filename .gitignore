@@ -1,3 +1,6 @@
 
 # SQLite (dados locais)
 *.db
+
+# env do agents (chave LLM)
+apps/agents/.env

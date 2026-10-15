@@ -5,7 +5,10 @@ from app.contracts import (
     common_fields,
     platform_ids,
     platform_name,
+    load_contract,
 )
+from app.llm import classify_platform as llm_classify
+from app.llm import extract_fields as llm_extract
 from app.models.state import OnboardingState
 from app.tools.gemud import abrir_ticket
 
@@ -29,23 +32,33 @@ def latest_user_message(state: OnboardingState) -> str:
 
 
 def classify_platform(message: str) -> str | None:
+    """Classifica por keyword (rápido); cai no LLM para texto ambíguo/natural."""
     lower = message.lower()
     for platform_id, keywords in PLATFORM_KEYWORDS.items():
         for keyword in keywords:
             if keyword in lower:
                 return platform_id
-    return None
+
+    # Fallback LLM para linguagem natural sem keyword exata.
+    platforms = load_contract()["platforms"]
+    return llm_classify(message, platforms)
 
 
 def extract_fields(message: str, field_names: list[str]) -> dict[str, str]:
+    """Extrai por regex (campo: valor); mescla com LLM para linguagem natural."""
     extracted: dict[str, str] = {}
     for field in field_names:
-        # Captura o valor até a próxima vírgula/ponto-e-vírgula (ou fim), para
-        # preservar valores com espaço (ex.: "Coord IA", "agente do financeiro").
         pattern = rf"{re.escape(field)}\s*[:=]\s*([^,;]+)"
         match = re.search(pattern, message, re.IGNORECASE)
         if match:
             extracted[field] = match.group(1).strip(' .,"\'')
+
+    # LLM preenche o que o regex não pegou (linguagem natural).
+    missing = [f for f in field_names if f not in extracted]
+    if missing:
+        llm_result = llm_extract(message, missing)
+        extracted.update(llm_result)
+
     return extracted
 
 
@@ -98,7 +111,9 @@ def especialista(state: OnboardingState) -> dict:
     latest = latest_user_message(state)
     required = all_required_fields(platform)
     extracted = extract_fields(latest, required)
-    return {"fields": extracted}
+    # Mescla com campos já coletados em turnos anteriores.
+    merged = {**dict(state.get("fields", {})), **extracted}
+    return {"fields": merged}
 
 
 def validador(state: OnboardingState) -> dict:
@@ -120,7 +135,7 @@ def validador(state: OnboardingState) -> dict:
             problems.append(f"faltam: {', '.join(missing)}")
         problems.extend(validate_format(field, fields[field]) for field in invalid)
         reply = "Ainda preciso de alguns dados — " + "; ".join(problems) + ". "
-        reply += "Informe no formato campo: valor."
+        reply += "Pode me informar com suas palavras."
         return {
             "missing_fields": missing,
             "invalid_fields": invalid,
