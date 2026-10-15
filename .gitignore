@@ -1,6 +1,38 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
-# SQLite (dados locais)
+# ===== Node / Next.js =====
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# ===== Variáveis de ambiente (nunca versionar segredos) =====
+.env
+.env.*
+!.env.example
+
+# ===== Bancos e dados locais =====
 *.db
+*.sqlite
+*.sqlite3
 
-# env do agents (chave LLM)
-apps/agents/.env
+# ===== Docker =====
+postgres_data/
+
+# ===== Ferramentas / SO =====
+.DS_Store
+*.pem
+*.log
+
+# ===== Playwright / testes =====
+playwright-report/
+test-results/

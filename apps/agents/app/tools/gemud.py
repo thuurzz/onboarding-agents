@@ -2,7 +2,7 @@ import os
 
 import httpx
 
-MOCK_GEMUD_URL: str = os.getenv("MOCK_GEMUD_URL", "http://localhost:8000")
+MOCK_GEMUD_URL: str = os.getenv("MOCK_GEMUD_URL", "http://localhost:8001")
 
 
 def abrir_ticket(platform: str, common: dict[str, str], platform_fields: dict[str, str]) -> dict:

@@ -1,7 +1,10 @@
+import os
 import sqlite3
 from pathlib import Path
 
-DB_PATH: Path = Path(__file__).resolve().parent.parent / "mock_gemud.db"
+# Caminho do banco configurável (útil em Docker, onde o volume monta em outro lugar).
+DEFAULT_DB_PATH: Path = Path(__file__).resolve().parent.parent / "mock_gemud.db"
+DB_PATH: Path = Path(os.getenv("GEMUD_DB_PATH", str(DEFAULT_DB_PATH)))
 
 
 def get_connection() -> sqlite3.Connection:

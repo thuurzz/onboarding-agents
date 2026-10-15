@@ -29,7 +29,7 @@ def test_abrir_ticket_posts_to_mock_gemud(monkeypatch) -> None:
     )
 
     assert result["id"] == 1
-    assert captured["url"] == "http://localhost:8000/tickets"
+    assert captured["url"] == "http://localhost:8001/tickets"
     payload = captured["json"]
     assert payload["platform"] == "litellm"
     assert payload["centro_custo"] == "123456789"

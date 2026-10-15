@@ -16,5 +16,45 @@ services:
       timeout: 5s
       retries: 10
 
+  mock-gemud:
+    build: ./apps/mock-gemud
+    container_name: onboarding-mock-gemud
+    environment:
+      GEMUD_DB_PATH: /data/mock_gemud.db
+    ports:
+      - "8001:8001"
+    volumes:
+      - gemud_data:/data
+
+  agents:
+    build: ./apps/agents
+    container_name: onboarding-agents
+    environment:
+      LLM_MODEL: ${LLM_MODEL:-openai/deepseek-v4-pro}
+      LLM_API_BASE: ${LLM_API_BASE:-https://ollama.com/v1}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      MOCK_GEMUD_URL: http://mock-gemud:8001
+      DATABASE_URL: postgresql://onboarding:onboarding@postgres:5432/onboarding
+    ports:
+      - "8002:8002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mock-gemud:
+        condition: service_started
+
+  web:
+    build: ./apps/web
+    container_name: onboarding-web
+    environment:
+      NEXT_PUBLIC_AGENTS_API_URL: ${NEXT_PUBLIC_AGENTS_API_URL:-http://localhost:8002}
+      NEXT_PUBLIC_MOCK_GEMUD_API_URL: ${NEXT_PUBLIC_MOCK_GEMUD_API_URL:-http://localhost:8001}
+    ports:
+      - "3005:3005"
+    depends_on:
+      - agents
+      - mock-gemud
+
 volumes:
   postgres_data:
+  gemud_data:
